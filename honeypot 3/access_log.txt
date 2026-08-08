@@ -1,0 +1,496 @@
+
+====================================
+
+[2026-08-08 04:38:58] 🚨 DECOY ACCESSED
+
+File:
+Database_Backup.txt
+
+Path:
+C:\Users\DELL\Downloads\Database_Backup.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061159
+
+Event Time:
+/Date(1786143852348)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:38:58] 🚨 DECOY ACCESSED
+
+File:
+Database_Backup.txt
+
+Path:
+C:\Users\DELL\Downloads\Database_Backup.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061160
+
+Event Time:
+/Date(1786143855421)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:39:27] 🚨 DECOY ACCESSED
+
+File:
+Financial_Report_2026.txt
+
+Path:
+C:\Users\DELL\Documents\Financial_Report_2026.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061190
+
+Event Time:
+/Date(1786144162811)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:39:30] 🚨 DECOY ACCESSED
+
+File:
+Financial_Report_2026.txt
+
+Path:
+C:\Users\DELL\Documents\Financial_Report_2026.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061191
+
+Event Time:
+/Date(1786144165378)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:40:30] 🚨 DECOY ACCESSED
+
+File:
+Customer_List.txt
+
+Path:
+C:\Users\DELL\Documents\Customer_List.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061192
+
+Event Time:
+/Date(1786144223572)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:40:30] 🚨 DECOY ACCESSED
+
+File:
+Customer_List.txt
+
+Path:
+C:\Users\DELL\Documents\Customer_List.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061193
+
+Event Time:
+/Date(1786144225809)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:48:19] 🚨 DECOY ACCESSED
+
+File:
+Employee_Database.txt
+
+Path:
+C:\Users\DELL\Documents\Employee_Database.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061199
+
+Event Time:
+/Date(1786144695136)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:48:23] 🚨 DECOY ACCESSED
+
+File:
+Employee_Database.txt
+
+Path:
+C:\Users\DELL\Documents\Employee_Database.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061200
+
+Event Time:
+/Date(1786144697948)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:48:41] 🚨 DECOY ACCESSED
+
+File:
+HR_Records.txt
+
+Path:
+C:\Users\DELL\Documents\HR_Records.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061201
+
+Event Time:
+/Date(1786144714630)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:48:41] 🚨 DECOY ACCESSED
+
+File:
+HR_Records.txt
+
+Path:
+C:\Users\DELL\Documents\HR_Records.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061202
+
+Event Time:
+/Date(1786144716741)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:49:26] 🚨 DECOY ACCESSED
+
+File:
+Salary_Report.txt
+
+Path:
+C:\Users\DELL\Documents\Salary_Report.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061203
+
+Event Time:
+/Date(1786144761944)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:49:26] 🚨 DECOY ACCESSED
+
+File:
+Salary_Report.txt
+
+Path:
+C:\Users\DELL\Documents\Salary_Report.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061204
+
+Event Time:
+/Date(1786144764186)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:52:25] 🚨 DECOY ACCESSED
+
+File:
+Customer_List.txt
+
+Path:
+C:\Users\DELL\Documents\Customer_List.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061205
+
+Event Time:
+/Date(1786144941596)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 04:52:29] 🚨 DECOY ACCESSED
+
+File:
+Customer_List.txt
+
+Path:
+C:\Users\DELL\Documents\Customer_List.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061206
+
+Event Time:
+/Date(1786144944313)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 05:31:13] 🚨 DECOY ACCESSED
+
+File:
+Server_Architecture.txt
+
+Path:
+C:\Users\DELL\Pictures\Server_Architecture.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061230
+
+Event Time:
+/Date(1786147268857)/
+
+User:
+DELL
+
+Process:
+C:\Windows\explorer.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+
+
+====================================
+
+[2026-08-08 05:31:13] 🚨 DECOY ACCESSED
+
+File:
+Server_Architecture.txt
+
+Path:
+C:\Users\DELL\Pictures\Server_Architecture.txt
+
+Windows Event:
+4663
+
+Record ID:
+1061231
+
+Event Time:
+/Date(1786147271183)/
+
+User:
+DELL
+
+Process:
+C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2606.15.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+
+Access:
+ReadData (or ListDirectory)
+
+====================================
+

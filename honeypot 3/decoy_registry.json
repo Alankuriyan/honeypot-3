@@ -1,0 +1,77 @@
+[
+    {
+        "Name":  "Passwords.txt",
+        "Path":  "C:\\Users\\DELL\\Desktop\\Passwords.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "VPN_Credentials.txt",
+        "Path":  "C:\\Users\\DELL\\Desktop\\VPN_Credentials.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Project_Notes_2026.txt",
+        "Path":  "C:\\Users\\DELL\\Desktop\\Project_Notes_2026.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Confidential_Notes.txt",
+        "Path":  "C:\\Users\\DELL\\Desktop\\Confidential_Notes.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Employee_Database.txt",
+        "Path":  "C:\\Users\\DELL\\Documents\\Employee_Database.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Salary_Report.txt",
+        "Path":  "C:\\Users\\DELL\\Documents\\Salary_Report.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "HR_Records.txt",
+        "Path":  "C:\\Users\\DELL\\Documents\\HR_Records.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Financial_Report_2026.txt",
+        "Path":  "C:\\Users\\DELL\\Documents\\Financial_Report_2026.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Customer_List.txt",
+        "Path":  "C:\\Users\\DELL\\Documents\\Customer_List.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Database_Backup.txt",
+        "Path":  "C:\\Users\\DELL\\Downloads\\Database_Backup.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Credentials.txt",
+        "Path":  "C:\\Users\\DELL\\Downloads\\Credentials.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Network_Config.txt",
+        "Path":  "C:\\Users\\DELL\\Downloads\\Network_Config.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Backup_Information.txt",
+        "Path":  "C:\\Users\\DELL\\Downloads\\Backup_Information.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Network_Diagram.txt",
+        "Path":  "C:\\Users\\DELL\\Pictures\\Network_Diagram.txt",
+        "Type":  "Honeypot Decoy"
+    },
+    {
+        "Name":  "Server_Architecture.txt",
+        "Path":  "C:\\Users\\DELL\\Pictures\\Server_Architecture.txt",
+        "Type":  "Honeypot Decoy"
+    }
+]
