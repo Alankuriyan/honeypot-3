@@ -41,6 +41,30 @@ const refreshBtn =
 
 
 // ============================================
+// RISK STATISTICS ELEMENTS
+// ============================================
+//
+// These are optional.
+// If the HTML elements don't exist yet,
+// the dashboard will continue working.
+//
+// We will add them to HTML later.
+// ============================================
+
+const criticalEvents =
+    document.getElementById("criticalEvents");
+
+const highRiskEvents =
+    document.getElementById("highRiskEvents");
+
+const mediumRiskEvents =
+    document.getElementById("mediumRiskEvents");
+
+const lowRiskEvents =
+    document.getElementById("lowRiskEvents");
+
+
+// ============================================
 // FETCH EVENTS
 // ============================================
 
@@ -52,6 +76,7 @@ async function fetchEvents() {
             `${API_URL}/api/events`
         );
 
+
         if (!response.ok) {
 
             throw new Error(
@@ -60,13 +85,17 @@ async function fetchEvents() {
 
         }
 
-        const events = await response.json();
+
+        const events =
+            await response.json();
+
 
         displayEvents(events);
 
         generateDecoyStatistics(events);
 
         generateProcessStatistics(events);
+
 
     }
 
@@ -77,18 +106,26 @@ async function fetchEvents() {
             error
         );
 
+
         eventsTable.innerHTML = `
+
             <tr>
+
                 <td
-                    colspan="6"
+                    colspan="7"
                     class="loading"
                 >
+
                     ❌ Could not connect to API
+
                 </td>
+
             </tr>
+
         `;
 
     }
+
 }
 
 
@@ -104,6 +141,7 @@ async function fetchStats() {
             `${API_URL}/api/stats`
         );
 
+
         if (!response.ok) {
 
             throw new Error(
@@ -112,7 +150,14 @@ async function fetchStats() {
 
         }
 
-        const stats = await response.json();
+
+        const stats =
+            await response.json();
+
+
+        // ------------------------------------
+        // EXISTING STATISTICS
+        // ------------------------------------
 
         totalEvents.textContent =
             stats.total_events;
@@ -126,6 +171,43 @@ async function fetchStats() {
         uniqueProcesses.textContent =
             stats.unique_processes;
 
+
+        // ------------------------------------
+        // RISK STATISTICS
+        // ------------------------------------
+
+        if (criticalEvents) {
+
+            criticalEvents.textContent =
+                stats.critical_events || 0;
+
+        }
+
+
+        if (highRiskEvents) {
+
+            highRiskEvents.textContent =
+                stats.high_risk_events || 0;
+
+        }
+
+
+        if (mediumRiskEvents) {
+
+            mediumRiskEvents.textContent =
+                stats.medium_risk_events || 0;
+
+        }
+
+
+        if (lowRiskEvents) {
+
+            lowRiskEvents.textContent =
+                stats.low_risk_events || 0;
+
+        }
+
+
     }
 
     catch (error) {
@@ -136,6 +218,7 @@ async function fetchStats() {
         );
 
     }
+
 }
 
 
@@ -152,14 +235,20 @@ function displayEvents(events) {
     if (!events.length) {
 
         eventsTable.innerHTML = `
+
             <tr>
+
                 <td
-                    colspan="6"
+                    colspan="7"
                     class="loading"
                 >
+
                     No security events detected
+
                 </td>
+
             </tr>
+
         `;
 
         return;
@@ -167,7 +256,10 @@ function displayEvents(events) {
     }
 
 
-    // Show newest first
+    // ----------------------------------------
+    // SHOW NEWEST FIRST
+    // ----------------------------------------
+
     const recentEvents =
         events.slice(0, 20);
 
@@ -175,9 +267,20 @@ function displayEvents(events) {
     eventsTable.innerHTML =
         recentEvents.map(event => {
 
-            const time =
-                formatDate(event.event_time);
 
+            // --------------------------------
+            // TIME
+            // --------------------------------
+
+            const time =
+                formatDate(
+                    event.event_time
+                );
+
+
+            // --------------------------------
+            // PROCESS
+            // --------------------------------
 
             const process =
                 getProcessName(
@@ -185,32 +288,73 @@ function displayEvents(events) {
                 );
 
 
+            // --------------------------------
+            // SEVERITY
+            // --------------------------------
+
             const severity =
                 event.severity || "HIGH";
+
+
+            // --------------------------------
+            // RISK
+            // --------------------------------
+
+            const riskScore =
+                event.risk_score ?? 0;
+
+
+            const riskLevel =
+                event.risk_level ||
+                "UNKNOWN";
+
+
+            // --------------------------------
+            // RISK REASONS
+            // --------------------------------
+
+            const riskReasons =
+                formatRiskReasons(
+                    event.risk_reasons
+                );
 
 
             return `
 
                 <tr>
 
+                    <!-- TIME -->
+
                     <td class="time-cell">
+
                         ${escapeHTML(time)}
+
                     </td>
 
 
+                    <!-- FILE -->
+
                     <td class="file-cell">
+
                         ${escapeHTML(
                             event.file_name
                         )}
+
                     </td>
 
 
+                    <!-- USER -->
+
                     <td>
+
                         ${escapeHTML(
                             event.user_name
                         )}
+
                     </td>
 
+
+                    <!-- PROCESS -->
 
                     <td
                         class="process-cell"
@@ -218,26 +362,73 @@ function displayEvents(events) {
                             event.process_name
                         )}"
                     >
+
                         ${escapeHTML(process)}
+
                     </td>
 
 
+                    <!-- ACCESS -->
+
                     <td>
+
                         ${escapeHTML(
                             event.access_type
                         )}
+
                     </td>
 
+
+                    <!-- SEVERITY -->
 
                     <td>
 
                         <span
-                            class="severity ${severity.toLowerCase()}"
+                            class="severity
+                            ${severity.toLowerCase()}"
                         >
+
                             ${escapeHTML(
                                 severity
                             )}
+
                         </span>
+
+                    </td>
+
+
+                    <!-- RISK -->
+
+                    <td
+                        class="risk-cell"
+                        title="${escapeHTML(
+                            riskReasons
+                        )}"
+                    >
+
+                        <div
+                            class="risk-score
+                            ${getRiskClass(
+                                riskLevel
+                            )}"
+                        >
+
+                            ${escapeHTML(
+                                String(riskScore)
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="risk-level"
+                        >
+
+                            ${escapeHTML(
+                                riskLevel
+                            )}
+
+                        </div>
 
                     </td>
 
@@ -246,6 +437,67 @@ function displayEvents(events) {
             `;
 
         }).join("");
+
+}
+
+
+// ============================================
+// RISK CLASS
+// ============================================
+
+function getRiskClass(level) {
+
+    if (!level) {
+
+        return "unknown";
+
+    }
+
+
+    return String(level)
+        .toLowerCase();
+
+}
+
+
+// ============================================
+// FORMAT RISK REASONS
+// ============================================
+
+function formatRiskReasons(value) {
+
+    if (!value) {
+
+        return "No risk analysis available";
+
+    }
+
+
+    try {
+
+        const reasons =
+            JSON.parse(value);
+
+
+        if (Array.isArray(reasons)) {
+
+            return reasons.join(
+                " | "
+            );
+
+        }
+
+
+    }
+
+    catch {
+
+        return String(value);
+
+    }
+
+
+    return String(value);
 
 }
 
@@ -262,7 +514,9 @@ function generateDecoyStatistics(events) {
     events.forEach(event => {
 
         const name =
-            event.file_name || "Unknown";
+            event.file_name ||
+            "Unknown";
+
 
         counts[name] =
             (counts[name] || 0) + 1;
@@ -282,9 +536,13 @@ function generateDecoyStatistics(events) {
     if (!sorted.length) {
 
         decoyList.innerHTML = `
+
             <div class="loading">
+
                 No decoy activity
+
             </div>
+
         `;
 
         return;
@@ -300,17 +558,25 @@ function generateDecoyStatistics(events) {
         sorted.map(
             ([name, count]) => {
 
+
                 const percentage =
                     (count / max) * 100;
 
 
                 return `
 
-                    <div class="decoy-item">
+                    <div
+                        class="decoy-item"
+                    >
 
-                        <div class="decoy-name">
+                        <div
+                            class="decoy-name"
+                        >
+
                             ${escapeHTML(name)}
+
                         </div>
+
 
                         <div
                             class="progress-container"
@@ -318,15 +584,24 @@ function generateDecoyStatistics(events) {
 
                             <div
                                 class="progress"
-                                style="width: ${percentage}%"
+                                style="
+                                    width:
+                                    ${percentage}%
+                                "
                             ></div>
 
                         </div>
 
-                        <div class="decoy-count">
+
+                        <div
+                            class="decoy-count"
+                        >
 
                             ${count}
-                            access${count !== 1 ? "es" : ""}
+
+                            access${count !== 1
+                                ? "es"
+                                : ""}
 
                         </div>
 
@@ -356,6 +631,7 @@ function generateProcessStatistics(events) {
                 event.process_name
             );
 
+
         counts[process] =
             (counts[process] || 0) + 1;
 
@@ -374,9 +650,13 @@ function generateProcessStatistics(events) {
     if (!sorted.length) {
 
         processList.innerHTML = `
+
             <div class="loading">
+
                 No process activity
+
             </div>
+
         `;
 
         return;
@@ -388,23 +668,42 @@ function generateProcessStatistics(events) {
         sorted.map(
             ([process, count]) => {
 
+
                 return `
 
-                    <div class="process-item">
+                    <div
+                        class="process-item"
+                    >
 
-                        <div class="process-icon">
+                        <div
+                            class="process-icon"
+                        >
+
                             ⚙️
+
                         </div>
+
 
                         <div
                             class="process-name"
-                            title="${escapeHTML(process)}"
+                            title="${escapeHTML(
+                                process
+                            )}"
                         >
-                            ${escapeHTML(process)}
+
+                            ${escapeHTML(
+                                process
+                            )}
+
                         </div>
 
-                        <div class="process-count">
+
+                        <div
+                            class="process-count"
+                        >
+
                             ${count}
+
                         </div>
 
                     </div>
@@ -475,6 +774,7 @@ function formatDate(value) {
                     Number(match[1])
                 );
 
+
             return date.toLocaleString();
 
         }
@@ -525,22 +825,27 @@ function escapeHTML(value) {
 
 
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
@@ -558,6 +863,7 @@ function updateLastUpdate() {
     const now =
         new Date();
 
+
     lastUpdate.textContent =
         now.toLocaleTimeString();
 
@@ -572,6 +878,7 @@ async function refreshDashboard() {
 
     refreshBtn.textContent =
         "↻ Loading...";
+
 
     refreshBtn.disabled = true;
 
@@ -591,7 +898,9 @@ async function refreshDashboard() {
     refreshBtn.textContent =
         "↻ Refresh";
 
-    refreshBtn.disabled = false;
+
+    refreshBtn.disabled =
+        false;
 
 }
 

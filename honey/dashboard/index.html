@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Honeypot Security Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     SIDEBAR
+========================================== -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            🛡️
+        </div>
+
+        <div>
+
+            <h2>Honeypot</h2>
+
+            <span>
+                Security Monitor
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <nav>
+
+        <a
+            href="#"
+            class="nav-item active"
+        >
+
+            <span>📊</span>
+
+            Dashboard
+
+        </a>
+
+
+        <a
+            href="#events"
+            class="nav-item"
+        >
+
+            <span>🚨</span>
+
+            Events
+
+        </a>
+
+
+        <a
+            href="#risk"
+            class="nav-item"
+        >
+
+            <span>⚠️</span>
+
+            Risk Analysis
+
+        </a>
+
+
+        <a
+            href="#decoys"
+            class="nav-item"
+        >
+
+            <span>📁</span>
+
+            Decoys
+
+        </a>
+
+
+        <a
+            href="#processes"
+            class="nav-item"
+        >
+
+            <span>⚙️</span>
+
+            Processes
+
+        </a>
+
+    </nav>
+
+
+    <div class="connection">
+
+        <span class="status-dot"></span>
+
+        <div>
+
+            <strong>
+                API Online
+            </strong>
+
+            <small>
+                localhost:3000
+            </small>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================
+     MAIN
+========================================== -->
+
+<main class="main">
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div>
+
+            <h1>
+                Security Dashboard
+            </h1>
+
+            <p>
+                Real-time honeypot activity monitoring
+            </p>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <div class="live-indicator">
+
+                <span></span>
+
+                LIVE
+
+            </div>
+
+
+            <button
+                id="refreshBtn"
+                class="refresh-btn"
+            >
+
+                ↻ Refresh
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================
+         GENERAL STATISTICS
+    ====================================== -->
+
+    <section class="stats">
+
+
+        <!-- TOTAL EVENTS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon red">
+                🚨
+            </div>
+
+            <div>
+
+                <p>
+                    Total Events
+                </p>
+
+                <h2 id="totalEvents">
+                    --
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- DECOYS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon blue">
+                📁
+            </div>
+
+            <div>
+
+                <p>
+                    Triggered Decoys
+                </p>
+
+                <h2 id="uniqueDecoys">
+                    --
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- USERS -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon yellow">
+                👤
+            </div>
+
+            <div>
+
+                <p>
+                    Users
+                </p>
+
+                <h2 id="uniqueUsers">
+                    --
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROCESSES -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon purple">
+                ⚙️
+            </div>
+
+            <div>
+
+                <p>
+                    Processes
+                </p>
+
+                <h2 id="uniqueProcesses">
+                    --
+                </h2>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         RISK ANALYSIS
+    ====================================== -->
+
+    <section
+        class="risk-section"
+        id="risk"
+    >
+
+
+        <div class="section-title">
+
+            <div>
+
+                <h2>
+                    Risk Analysis
+                </h2>
+
+                <p>
+                    Explainable threat risk assessment
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="risk-stats">
+
+
+            <!-- CRITICAL -->
+
+            <div
+                class="risk-card critical"
+            >
+
+                <div class="risk-card-icon">
+                    🔴
+                </div>
+
+                <div>
+
+                    <p>
+                        Critical
+                    </p>
+
+                    <h2
+                        id="criticalEvents"
+                    >
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- HIGH -->
+
+            <div
+                class="risk-card high"
+            >
+
+                <div class="risk-card-icon">
+                    🟠
+                </div>
+
+                <div>
+
+                    <p>
+                        High Risk
+                    </p>
+
+                    <h2
+                        id="highRiskEvents"
+                    >
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- MEDIUM -->
+
+            <div
+                class="risk-card medium"
+            >
+
+                <div class="risk-card-icon">
+                    🟡
+                </div>
+
+                <div>
+
+                    <p>
+                        Medium Risk
+                    </p>
+
+                    <h2
+                        id="mediumRiskEvents"
+                    >
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOW -->
+
+            <div
+                class="risk-card low"
+            >
+
+                <div class="risk-card-icon">
+                    🟢
+                </div>
+
+                <div>
+
+                    <p>
+                        Low Risk
+                    </p>
+
+                    <h2
+                        id="lowRiskEvents"
+                    >
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         CONTENT GRID
+    ====================================== -->
+
+    <section class="dashboard-grid">
+
+
+        <!-- =================================
+             RECENT EVENTS
+        ================================== -->
+
+        <div
+            class="panel events-panel"
+            id="events"
+        >
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Recent Security Events
+                    </h2>
+
+                    <p>
+                        Latest decoy activity
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="event-count"
+                    id="eventCount"
+                >
+                    0 events
+                </span>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Decoy
+                            </th>
+
+                            <th>
+                                User
+                            </th>
+
+                            <th>
+                                Process
+                            </th>
+
+                            <th>
+                                Access
+                            </th>
+
+                            <th>
+                                Severity
+                            </th>
+
+                            <th>
+                                Risk
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="eventsTable">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="loading"
+                            >
+
+                                Loading events...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             TOP DECOYS
+        ================================== -->
+
+        <div
+            class="panel"
+            id="decoys"
+        >
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Targeted Decoys
+                    </h2>
+
+                    <p>
+                        Most frequently accessed
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="decoyList"
+                class="decoy-list"
+            >
+
+                <div class="loading">
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             PROCESSES
+        ================================== -->
+
+        <div
+            class="panel"
+            id="processes"
+        >
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Accessing Processes
+                    </h2>
+
+                    <p>
+                        Processes triggering decoys
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="processList"
+                class="process-list"
+            >
+
+                <div class="loading">
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             SYSTEM INFORMATION
+        ================================== -->
+
+        <div class="panel system-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        System Status
+                    </h2>
+
+                    <p>
+                        Honeypot monitoring status
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="system-info">
+
+
+                <div class="system-row">
+
+                    <span>
+                        API Server
+                    </span>
+
+                    <strong class="online">
+                        ● Online
+                    </strong>
+
+                </div>
+
+
+                <div class="system-row">
+
+                    <span>
+                        Event Monitoring
+                    </span>
+
+                    <strong class="online">
+                        ● Active
+                    </strong>
+
+                </div>
+
+
+                <div class="system-row">
+
+                    <span>
+                        Windows Event
+                    </span>
+
+                    <strong>
+                        4663
+                    </strong>
+
+                </div>
+
+
+                <div class="system-row">
+
+                    <span>
+                        Risk Engine
+                    </span>
+
+                    <strong class="online">
+                        ● Active
+                    </strong>
+
+                </div>
+
+
+                <div class="system-row">
+
+                    <span>
+                        Last Update
+                    </span>
+
+                    <strong id="lastUpdate">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>

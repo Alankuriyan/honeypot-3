@@ -1,6 +1,4 @@
-/* =========================================
-   GLOBAL
-========================================= */
+
 
 * {
     box-sizing: border-box;
@@ -8,124 +6,84 @@
     padding: 0;
 }
 
-
 body {
-
     font-family:
         Arial,
         Helvetica,
         sans-serif;
 
     background: #0b0f14;
-
     color: #e5e7eb;
-
     min-height: 100vh;
-
 }
 
 
 /* =========================================
-   SIDEBAR
+SIDEBAR
 ========================================= */
 
 .sidebar {
-
     position: fixed;
-
     left: 0;
     top: 0;
 
     width: 240px;
-
     height: 100vh;
 
     background: #11161d;
-
     border-right: 1px solid #222a35;
 
     padding: 25px 18px;
 
     display: flex;
-
     flex-direction: column;
-
 }
-
 
 .logo {
-
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
     margin-bottom: 45px;
-
 }
 
-
 .logo-icon {
-
     width: 42px;
-
     height: 42px;
 
     background: #17202b;
-
     border: 1px solid #293544;
-
     border-radius: 10px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     font-size: 21px;
-
 }
-
 
 .logo h2 {
-
     font-size: 18px;
-
     color: #ffffff;
-
 }
 
-
 .logo span {
-
     font-size: 11px;
-
     color: #7f8b99;
-
 }
 
 
 /* =========================================
-   NAVIGATION
+NAVIGATION
 ========================================= */
 
 nav {
-
     display: flex;
-
     flex-direction: column;
-
     gap: 8px;
-
 }
 
-
 .nav-item {
-
     text-decoration: none;
-
     color: #8d98a7;
 
     padding: 13px 14px;
@@ -133,7 +91,6 @@ nav {
     border-radius: 8px;
 
     display: flex;
-
     align-items: center;
 
     gap: 12px;
@@ -141,40 +98,29 @@ nav {
     font-size: 14px;
 
     transition: 0.2s;
-
 }
-
 
 .nav-item:hover {
-
     background: #171e27;
-
     color: #ffffff;
-
 }
 
-
 .nav-item.active {
-
     background: #1a2430;
-
     color: #ffffff;
 
     border-left: 3px solid #3b82f6;
-
 }
 
 
 /* =========================================
-   CONNECTION
+CONNECTION
 ========================================= */
 
 .connection {
-
     margin-top: auto;
 
     background: #151b23;
-
     border: 1px solid #252e3a;
 
     padding: 13px;
@@ -182,18 +128,12 @@ nav {
     border-radius: 8px;
 
     display: flex;
-
     gap: 10px;
-
     align-items: center;
-
 }
 
-
 .status-dot {
-
     width: 9px;
-
     height: 9px;
 
     background: #22c55e;
@@ -202,108 +142,72 @@ nav {
 
     box-shadow:
         0 0 8px #22c55e;
-
 }
-
 
 .connection strong {
-
     display: block;
-
     font-size: 12px;
-
 }
 
-
 .connection small {
-
     color: #727e8d;
-
     font-size: 10px;
-
 }
 
 
 /* =========================================
-   MAIN
+MAIN
 ========================================= */
 
 .main {
-
     margin-left: 240px;
-
     padding: 30px;
-
 }
 
 
 /* =========================================
-   HEADER
+HEADER
 ========================================= */
 
 .header {
-
     display: flex;
 
     justify-content: space-between;
-
     align-items: center;
 
     margin-bottom: 28px;
-
 }
-
 
 .header h1 {
-
     font-size: 27px;
-
     margin-bottom: 5px;
-
 }
-
 
 .header p {
-
     color: #778394;
-
     font-size: 13px;
-
 }
-
 
 .header-right {
-
     display: flex;
-
     align-items: center;
-
     gap: 18px;
-
 }
 
-
 .live-indicator {
-
     display: flex;
-
     align-items: center;
 
     gap: 7px;
 
     font-size: 11px;
-
     font-weight: bold;
 
     color: #22c55e;
-
 }
 
-
 .live-indicator span {
-
     width: 8px;
-
     height: 8px;
 
     background: #22c55e;
@@ -311,9 +215,7 @@ nav {
     border-radius: 50%;
 
     animation: pulse 1.5s infinite;
-
 }
-
 
 @keyframes pulse {
 
@@ -328,12 +230,9 @@ nav {
     100% {
         opacity: 1;
     }
-
 }
 
-
 .refresh-btn {
-
     background: #17202b;
 
     border: 1px solid #2b3745;
@@ -345,23 +244,18 @@ nav {
     border-radius: 7px;
 
     cursor: pointer;
-
 }
 
-
 .refresh-btn:hover {
-
     background: #202b38;
-
 }
 
 
 /* =========================================
-   STATISTICS
+GENERAL STATISTICS
 ========================================= */
 
 .stats {
-
     display: grid;
 
     grid-template-columns:
@@ -370,12 +264,9 @@ nav {
     gap: 18px;
 
     margin-bottom: 20px;
-
 }
 
-
 .stat-card {
-
     background: #11161d;
 
     border: 1px solid #222a35;
@@ -385,103 +276,234 @@ nav {
     padding: 20px;
 
     display: flex;
-
     align-items: center;
 
     gap: 15px;
-
 }
 
-
 .stat-icon {
-
     width: 45px;
-
     height: 45px;
 
     border-radius: 9px;
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 
     font-size: 20px;
-
 }
-
 
 .stat-icon.red {
-
     background: #2a181c;
-
 }
-
 
 .stat-icon.blue {
-
     background: #17243a;
-
 }
-
 
 .stat-icon.yellow {
-
     background: #292516;
-
 }
-
 
 .stat-icon.purple {
-
     background: #241b32;
-
 }
 
-
 .stat-card p {
-
     color: #7c8796;
 
     font-size: 12px;
 
     margin-bottom: 5px;
-
 }
 
-
 .stat-card h2 {
-
     font-size: 25px;
-
     color: #ffffff;
-
 }
 
 
 /* =========================================
-   GRID
+RISK ANALYSIS
+========================================= */
+
+.risk-section {
+    background: #11161d;
+
+    border: 1px solid #222a35;
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+}
+
+.section-title {
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.section-title p {
+    color: #727e8d;
+    font-size: 11px;
+}
+
+
+/* =========================================
+RISK CARDS - HORIZONTAL LINE
+========================================= */
+
+.risk-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 15px;
+
+    width: 100%;
+}
+
+.risk-card {
+    background: #151b23;
+
+    border: 1px solid #252e3a;
+
+    border-radius: 9px;
+
+    padding: 18px;
+
+    min-height: 85px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    transition: 0.2s;
+}
+
+.risk-card:hover {
+    background: #19212b;
+
+    transform: translateY(-2px);
+}
+
+
+/* RISK ICON */
+
+.risk-card-icon {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    font-size: 19px;
+}
+
+
+/* RISK TEXT */
+
+.risk-card p {
+    color: #7c8796;
+
+    font-size: 11px;
+
+    margin-bottom: 5px;
+}
+
+.risk-card h2 {
+    font-size: 24px;
+
+    color: #ffffff;
+}
+
+
+/* =========================================
+CRITICAL
+========================================= */
+
+.risk-card.critical {
+    border-left: 3px solid #ef4444;
+}
+
+.risk-card.critical .risk-card-icon {
+    background: #35191d;
+}
+
+
+/* =========================================
+HIGH
+========================================= */
+
+.risk-card.high {
+    border-left: 3px solid #f97316;
+}
+
+.risk-card.high .risk-card-icon {
+    background: #352219;
+}
+
+
+/* =========================================
+MEDIUM
+========================================= */
+
+.risk-card.medium {
+    border-left: 3px solid #eab308;
+}
+
+.risk-card.medium .risk-card-icon {
+    background: #342a16;
+}
+
+
+/* =========================================
+LOW
+========================================= */
+
+.risk-card.low {
+    border-left: 3px solid #22c55e;
+}
+
+.risk-card.low .risk-card-icon {
+    background: #182d21;
+}
+
+
+/* =========================================
+MAIN DASHBOARD GRID
 ========================================= */
 
 .dashboard-grid {
-
     display: grid;
 
     grid-template-columns:
         2fr 1fr;
 
     gap: 18px;
-
 }
 
 
 /* =========================================
-   PANEL
+PANEL
 ========================================= */
 
 .panel {
-
     background: #11161d;
 
     border: 1px solid #222a35;
@@ -489,19 +511,13 @@ nav {
     border-radius: 10px;
 
     overflow: hidden;
-
 }
-
 
 .events-panel {
-
     grid-column: 1 / -1;
-
 }
 
-
 .panel-header {
-
     padding: 19px;
 
     border-bottom: 1px solid #222a35;
@@ -511,66 +527,46 @@ nav {
     justify-content: space-between;
 
     align-items: center;
-
 }
 
-
 .panel-header h2 {
-
     font-size: 15px;
 
     margin-bottom: 4px;
-
 }
 
-
 .panel-header p {
-
     color: #727e8d;
 
     font-size: 11px;
-
 }
 
-
 .event-count {
-
     font-size: 11px;
 
     color: #7f8b99;
-
 }
 
 
 /* =========================================
-   TABLE
+TABLE
 ========================================= */
 
 .table-wrapper {
-
     overflow-x: auto;
-
 }
 
-
 table {
-
     width: 100%;
 
     border-collapse: collapse;
-
 }
-
 
 thead {
-
     background: #151b23;
-
 }
 
-
 th {
-
     text-align: left;
 
     padding: 12px 15px;
@@ -582,12 +578,9 @@ th {
     text-transform: uppercase;
 
     letter-spacing: 0.5px;
-
 }
 
-
 td {
-
     padding: 13px 15px;
 
     border-top: 1px solid #1e2630;
@@ -595,19 +588,13 @@ td {
     font-size: 12px;
 
     max-width: 230px;
-
 }
-
 
 tbody tr:hover {
-
     background: #151b23;
-
 }
 
-
 .process-cell {
-
     color: #8da0b5;
 
     max-width: 260px;
@@ -617,30 +604,67 @@ tbody tr:hover {
     text-overflow: ellipsis;
 
     white-space: nowrap;
-
 }
 
-
 .file-cell {
-
     color: #dce3eb;
 
     font-weight: 500;
-
 }
 
-
 .time-cell {
-
     color: #778394;
 
     white-space: nowrap;
-
 }
 
 
-.severity {
+/* =========================================
+SEVERITY
+========================================= */
 
+.severity {
+    display: inline-block;
+
+    padding: 4px 8px;
+
+    border-radius: 5px;
+
+    font-size: 9px;
+
+    font-weight: bold;
+}
+
+.severity.high {
+    background: #35191d;
+
+    color: #ff6b78;
+}
+
+.severity.medium {
+    background: #342a16;
+
+    color: #eabf58;
+}
+
+.severity.low {
+    background: #182d21;
+
+    color: #58c985;
+}
+
+.severity.critical {
+    background: #42151a;
+
+    color: #ff4d5d;
+}
+
+
+/* =========================================
+RISK BADGE
+========================================= */
+
+.risk-badge {
     display: inline-block;
 
     padding: 4px 8px;
@@ -651,65 +675,49 @@ tbody tr:hover {
 
     font-weight: bold;
 
+    white-space: nowrap;
 }
 
-
-.severity.high {
-
-    background: #35191d;
-
-    color: #ff6b78;
-
+.risk-badge.critical {
+    background: #42151a;
+    color: #ff4d5d;
 }
 
+.risk-badge.high {
+    background: #352219;
+    color: #ff8b45;
+}
 
-.severity.medium {
-
+.risk-badge.medium {
     background: #342a16;
-
     color: #eabf58;
-
 }
 
-
-.severity.low {
-
+.risk-badge.low {
     background: #182d21;
-
     color: #58c985;
-
 }
 
 
 /* =========================================
-   DECOY LIST
+DECOY LIST
 ========================================= */
 
 .decoy-list {
-
     padding: 10px 18px 18px;
-
 }
 
-
 .decoy-item {
-
     padding: 12px 0;
 
     border-bottom: 1px solid #202731;
-
 }
-
 
 .decoy-item:last-child {
-
     border-bottom: none;
-
 }
 
-
 .decoy-name {
-
     font-size: 12px;
 
     margin-bottom: 7px;
@@ -719,12 +727,9 @@ tbody tr:hover {
     overflow: hidden;
 
     text-overflow: ellipsis;
-
 }
 
-
 .progress-container {
-
     height: 5px;
 
     background: #1c232d;
@@ -732,45 +737,34 @@ tbody tr:hover {
     border-radius: 10px;
 
     overflow: hidden;
-
 }
 
-
 .progress {
-
     height: 100%;
 
     background: #3b82f6;
 
     border-radius: 10px;
-
 }
 
-
 .decoy-count {
-
     font-size: 10px;
 
     color: #727e8d;
 
     margin-top: 5px;
-
 }
 
 
 /* =========================================
-   PROCESS LIST
+PROCESS LIST
 ========================================= */
 
 .process-list {
-
     padding: 10px 18px 18px;
-
 }
 
-
 .process-item {
-
     display: flex;
 
     align-items: center;
@@ -780,21 +774,14 @@ tbody tr:hover {
     padding: 11px 0;
 
     border-bottom: 1px solid #202731;
-
 }
-
 
 .process-item:last-child {
-
     border-bottom: none;
-
 }
 
-
 .process-icon {
-
     width: 30px;
-
     height: 30px;
 
     background: #19222c;
@@ -804,14 +791,10 @@ tbody tr:hover {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
-
 }
 
-
 .process-name {
-
     flex: 1;
 
     font-size: 11px;
@@ -821,32 +804,24 @@ tbody tr:hover {
     overflow: hidden;
 
     text-overflow: ellipsis;
-
 }
 
-
 .process-count {
-
     color: #758293;
 
     font-size: 10px;
-
 }
 
 
 /* =========================================
-   SYSTEM STATUS
+SYSTEM STATUS
 ========================================= */
 
 .system-info {
-
     padding: 10px 18px 18px;
-
 }
 
-
 .system-row {
-
     display: flex;
 
     justify-content: space-between;
@@ -858,132 +833,134 @@ tbody tr:hover {
     border-bottom: 1px solid #202731;
 
     font-size: 12px;
-
 }
-
 
 .system-row:last-child {
-
     border-bottom: none;
-
 }
-
 
 .system-row span {
-
     color: #7d8897;
-
 }
 
-
 .online {
-
     color: #32c978;
-
 }
 
 
 /* =========================================
-   LOADING
+LOADING
 ========================================= */
 
 .loading {
-
     text-align: center;
 
     padding: 30px !important;
 
     color: #697585;
-
 }
 
 
 /* =========================================
-   RESPONSIVE
+RESPONSIVE - TABLET
 ========================================= */
 
 @media (max-width: 1100px) {
 
     .stats {
-
         grid-template-columns:
             repeat(2, 1fr);
+    }
 
+    .risk-stats {
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 }
 
+
+/* =========================================
+RESPONSIVE - SMALL TABLET
+========================================= */
 
 @media (max-width: 800px) {
 
     .sidebar {
-
         width: 65px;
 
         padding: 20px 10px;
-
     }
 
     .logo h2,
-    .logo span,
-    .nav-item:not(.active)::after,
+    .logo span {
+        display: none;
+    }
+
     .nav-item {
-
         font-size: 0;
-
     }
 
     .nav-item span {
-
         font-size: 18px;
-
     }
 
     .connection div {
-
         display: none;
-
     }
 
     .main {
-
         margin-left: 65px;
 
         padding: 18px;
-
     }
 
     .dashboard-grid {
-
         grid-template-columns: 1fr;
-
     }
 
     .events-panel {
-
         grid-column: auto;
+    }
 
+    .risk-stats {
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 }
 
 
+/* =========================================
+RESPONSIVE - MOBILE
+========================================= */
+
 @media (max-width: 550px) {
 
     .stats {
-
         grid-template-columns: 1fr;
+    }
 
+    .risk-stats {
+        grid-template-columns: 1fr;
     }
 
     .header {
-
         flex-direction: column;
 
         align-items: flex-start;
 
         gap: 15px;
+    }
 
+    .header-right {
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+    .risk-card {
+        width: 100%;
     }
 
 }
