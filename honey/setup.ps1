@@ -1,47 +1,44 @@
-# ============================================
+# ============================================================
 # HONEYPOT AUTOMATIC SETUP
-# Version 1 - Multiple Text Decoys
-# ============================================
+# Version 2 - Multi-Format Decoys
+# ============================================================
 
-# --------------------------------------------
-# 1. Check Administrator privileges
-# --------------------------------------------
+# ============================================================
+# 1. ADMINISTRATOR CHECK
+# ============================================================
 
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
 
-$principal = New-Object Security.Principal.WindowsPrincipal(
-    $currentUser
-)
+$principal = New-Object System.Security.Principal.WindowsPrincipal($currentUser)
 
-if (-not $principal.IsInRole(
-    [Security.Principal.WindowsBuiltInRole]::Administrator
-)) {
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
 
     Write-Host ""
-    Write-Host "ERROR: Please run PowerShell/VS Code as Administrator." -ForegroundColor Red
+    Write-Host "ERROR: Run PowerShell as Administrator." -ForegroundColor Red
     Write-Host ""
     exit 1
 }
 
-# --------------------------------------------
-# 2. Basic information
-# --------------------------------------------
-
-Write-Host "============================================"
-Write-Host "       HONEYPOT AUTOMATIC SETUP"
-Write-Host "       VERSION 1 - TEXT DECOYS"
-Write-Host "============================================"
-Write-Host ""
+# ============================================================
+# 2. BASIC INFORMATION
+# ============================================================
 
 $BaseDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+Write-Host ""
+Write-Host "==================================================" -ForegroundColor Cyan
+Write-Host "       HONEYPOT AUTOMATIC SETUP" -ForegroundColor Cyan
+Write-Host "       VERSION 2 - MULTI-FORMAT DECOYS" -ForegroundColor Cyan
+Write-Host "==================================================" -ForegroundColor Cyan
+Write-Host ""
 
 Write-Host "[+] Honeypot directory:"
 Write-Host "    $BaseDir"
 Write-Host ""
 
-# --------------------------------------------
-# 3. Enable Windows File System auditing
-# --------------------------------------------
+# ============================================================
+# 3. ENABLE FILE SYSTEM AUDITING
+# ============================================================
 
 Write-Host "[+] Enabling Windows File System auditing..."
 
@@ -49,16 +46,16 @@ auditpol /set /subcategory:"File System" /success:enable /failure:enable
 
 if ($LASTEXITCODE -ne 0) {
 
-    Write-Host "[-] Failed to enable File System auditing." -ForegroundColor Red
+    Write-Host "[-] Failed to enable auditing." -ForegroundColor Red
     exit 1
 }
 
 Write-Host "[+] File System auditing enabled" -ForegroundColor Green
 Write-Host ""
 
-# --------------------------------------------
-# 4. Find user folders
-# --------------------------------------------
+# ============================================================
+# 4. USER FOLDERS
+# ============================================================
 
 $UserProfile = $env:USERPROFILE
 
@@ -67,9 +64,9 @@ $DocumentsPath = Join-Path $UserProfile "Documents"
 $DownloadsPath = Join-Path $UserProfile "Downloads"
 $PicturesPath  = Join-Path $UserProfile "Pictures"
 
-# --------------------------------------------
-# 5. Detect OneDrive
-# --------------------------------------------
+# ============================================================
+# 5. ONEDRIVE DETECTION
+# ============================================================
 
 $OneDrivePath = $null
 
@@ -88,13 +85,13 @@ elseif ($env:OneDriveCommercial -and (Test-Path $env:OneDriveCommercial)) {
     $OneDrivePath = $env:OneDriveCommercial
 }
 
-# --------------------------------------------
-# 6. Display target locations
-# --------------------------------------------
+# ============================================================
+# 6. DISPLAY TARGET LOCATIONS
+# ============================================================
 
-Write-Host "============================================"
+Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host "       TARGET LOCATIONS"
-Write-Host "============================================"
+Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host ""
 
 Write-Host "[+] Desktop:"
@@ -117,215 +114,621 @@ if ($OneDrivePath) {
 }
 else {
 
-    Write-Host "[=] OneDrive:"
-    Write-Host "    Not detected"
+    Write-Host "[=] OneDrive: Not detected"
 }
 
 Write-Host ""
 
-# --------------------------------------------
-# 7. Define decoys
-# --------------------------------------------
+# ============================================================
+# 7. REGISTRY
+# ============================================================
 
-$Decoys = @(
+$Registry = @()
 
-    # ========================================
-    # DESKTOP
-    # ========================================
+# ============================================================
+# 8. AUDIT FUNCTION
+# ============================================================
 
-    @{
-        Name = "Passwords.txt"
-        Location = $DesktopPath
+function Set-HoneypotAudit {
 
-        Content = @"
-CONFIDENTIAL - PASSWORD INFORMATION
+    param(
+        [string]$FilePath
+    )
 
-Environment: Internal Testing
+    try {
 
-Account: finance-demo
-Status: Active
+        $acl = Get-Acl -Path $FilePath -Audit
 
-Account: reporting-demo
-Status: Active
+        $identity = New-Object System.Security.Principal.SecurityIdentifier(
+            "S-1-1-0"
+        )
 
-Account: admin-demo
-Status: Restricted
+        $rights =
+            [System.Security.AccessControl.FileSystemRights]::ReadData `
+            -bor `
+            [System.Security.AccessControl.FileSystemRights]::WriteData
 
-NOTICE:
-This is a honeypot decoy.
-All information in this file is fictional.
+        $auditFlags =
+            [System.Security.AccessControl.AuditFlags]::Success
+
+        $auditRule =
+            New-Object System.Security.AccessControl.FileSystemAuditRule(
+                $identity,
+                $rights,
+                $auditFlags
+            )
+
+        $acl.AddAuditRule($auditRule)
+
+        Set-Acl -Path $FilePath -AclObject $acl
+
+        return $true
+    }
+    catch {
+
+        Write-Host "[-] Audit configuration failed" -ForegroundColor Red
+        Write-Host "    $($_.Exception.Message)"
+
+        return $false
+    }
+}
+
+# ============================================================
+# 9. REGISTER DECOY
+# ============================================================
+
+function Register-Decoy {
+
+    param(
+        [string]$Name,
+        [string]$Path,
+        [string]$Type,
+        [string]$Category
+    )
+
+    $script:Registry += [PSCustomObject]@{
+        Name     = $Name
+        Path     = $Path
+        Type     = $Type
+        Category = $Category
+    }
+}
+
+# ============================================================
+# 10. CREATE TEXT DECOY
+# ============================================================
+
+function Create-TextDecoy {
+
+    param(
+        [string]$Name,
+        [string]$Location,
+        [string]$Content,
+        [string]$Category
+    )
+
+    if (-not (Test-Path $Location)) {
+        Write-Host "[=] Location unavailable: $Location"
+        return
+    }
+
+    $FilePath = Join-Path $Location $Name
+
+    Write-Host ""
+    Write-Host "Processing: $Name" -ForegroundColor Yellow
+
+    if (-not (Test-Path $FilePath)) {
+
+        Set-Content `
+            -Path $FilePath `
+            -Value $Content `
+            -Encoding UTF8
+
+        Write-Host "[+] Created" -ForegroundColor Green
+    }
+    else {
+
+        Write-Host "[=] Already exists"
+    }
+
+    if (Set-HoneypotAudit -FilePath $FilePath) {
+
+        Write-Host "[+] Auditing enabled" -ForegroundColor Green
+    }
+
+    Register-Decoy `
+        -Name $Name `
+        -Path (Resolve-Path $FilePath).Path `
+        -Type "Text" `
+        -Category $Category
+}
+
+# ============================================================
+# 11. CREATE JAVASCRIPT DECOY
+# ============================================================
+
+function Create-JSDecoy {
+
+    param(
+        [string]$Name,
+        [string]$Location
+    )
+
+    if (-not (Test-Path $Location)) {
+        return
+    }
+
+    $FilePath = Join-Path $Location $Name
+
+    $Content = @"
+/*
+DATABASE CONFIGURATION
+INTERNAL TEST ENVIRONMENT
+*/
+
+const databaseConfig = {
+    host: "db-test.example.invalid",
+    port: 5432,
+    database: "CorporateDB",
+    username: "database-demo-user",
+    password: "HONEYPOT_FAKE_PASSWORD",
+    environment: "TEST"
+};
+
+module.exports = databaseConfig;
+
+/*
+WARNING:
+This file is a honeypot decoy.
+No real credentials are stored here.
+*/
 "@
-    },
 
-    @{
-        Name = "VPN_Credentials.txt"
-        Location = $DesktopPath
+    Write-Host ""
+    Write-Host "Processing: $Name" -ForegroundColor Yellow
 
-        Content = @"
-CONFIDENTIAL - VPN ACCESS INFORMATION
+    if (-not (Test-Path $FilePath)) {
+
+        Set-Content `
+            -Path $FilePath `
+            -Value $Content `
+            -Encoding UTF8
+
+        Write-Host "[+] Created JavaScript" -ForegroundColor Green
+    }
+    else {
+
+        Write-Host "[=] Already exists"
+    }
+
+    if (Set-HoneypotAudit -FilePath $FilePath) {
+
+        Write-Host "[+] Auditing enabled" -ForegroundColor Green
+    }
+
+    Register-Decoy `
+        -Name $Name `
+        -Path (Resolve-Path $FilePath).Path `
+        -Type "JavaScript" `
+        -Category "Database"
+}
+
+# ============================================================
+# 12. CREATE PDF DECOY
+# ============================================================
+
+function Create-PDFDecoy {
+
+    param(
+        [string]$Name,
+        [string]$Location
+    )
+
+    if (-not (Test-Path $Location)) {
+        return
+    }
+
+    $FilePath = Join-Path $Location $Name
+
+    Write-Host ""
+    Write-Host "Processing: $Name" -ForegroundColor Yellow
+
+    if (-not (Test-Path $FilePath)) {
+
+        $pdf = @"
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 180 >>
+stream
+BT
+/F1 20 Tf
+72 720 Td
+(FINANCIAL REPORT 2026) Tj
+/F1 12 Tf
+0 -40 Td
+(CONFIDENTIAL - HONEYPOT DECOY) Tj
+0 -30 Td
+(All information in this document is fictional.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+trailer
+<< /Root 1 0 R >>
+%%EOF
+"@
+
+        [System.IO.File]::WriteAllText(
+            $FilePath,
+            $pdf,
+            [System.Text.Encoding]::ASCII
+        )
+
+        Write-Host "[+] Created PDF" -ForegroundColor Green
+    }
+    else {
+
+        Write-Host "[=] Already exists"
+    }
+
+    if (Set-HoneypotAudit -FilePath $FilePath) {
+
+        Write-Host "[+] Auditing enabled" -ForegroundColor Green
+    }
+
+    Register-Decoy `
+        -Name $Name `
+        -Path (Resolve-Path $FilePath).Path `
+        -Type "PDF" `
+        -Category "Financial"
+}
+
+# ============================================================
+# 13. CREATE EXCEL DECOY
+# ============================================================
+
+function Create-ExcelDecoy {
+
+    param(
+        [string]$Name,
+        [string]$Location
+    )
+
+    if (-not (Test-Path $Location)) {
+        return
+    }
+
+    $FilePath = Join-Path $Location $Name
+
+    Write-Host ""
+    Write-Host "Processing: $Name" -ForegroundColor Yellow
+
+    try {
+
+        $excel = New-Object -ComObject Excel.Application
+
+        $excel.Visible = $false
+        $excel.DisplayAlerts = $false
+
+        $workbook = $excel.Workbooks.Add()
+        $sheet = $workbook.Worksheets.Item(1)
+
+        $sheet.Cells.Item(1,1) = "Employee ID"
+        $sheet.Cells.Item(1,2) = "Department"
+        $sheet.Cells.Item(1,3) = "Salary"
+        $sheet.Cells.Item(1,4) = "Status"
+
+        $sheet.Cells.Item(2,1) = "EMP-1001"
+        $sheet.Cells.Item(2,2) = "Finance"
+        $sheet.Cells.Item(2,3) = "85000"
+        $sheet.Cells.Item(2,4) = "Active"
+
+        $sheet.Cells.Item(3,1) = "EMP-1002"
+        $sheet.Cells.Item(3,2) = "Engineering"
+        $sheet.Cells.Item(3,3) = "92000"
+        $sheet.Cells.Item(3,4) = "Active"
+
+        $sheet.Cells.Item(4,1) = "EMP-1003"
+        $sheet.Cells.Item(4,2) = "Operations"
+        $sheet.Cells.Item(4,3) = "78000"
+        $sheet.Cells.Item(4,4) = "Active"
+
+        $sheet.Cells.Item(6,1) =
+            "HONEYPOT DECOY - ALL INFORMATION IS FICTIONAL"
+
+        $workbook.SaveAs(
+            $FilePath,
+            51
+        )
+
+        $workbook.Close($true)
+        $excel.Quit()
+
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($sheet) | Out-Null
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook) | Out-Null
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
+
+        Write-Host "[+] Created Excel file" -ForegroundColor Green
+    }
+    catch {
+
+        Write-Host "[=] Microsoft Excel not available - skipping Excel." -ForegroundColor Yellow
+        return
+    }
+
+    if (Set-HoneypotAudit -FilePath $FilePath) {
+
+        Write-Host "[+] Auditing enabled" -ForegroundColor Green
+    }
+
+    Register-Decoy `
+        -Name $Name `
+        -Path (Resolve-Path $FilePath).Path `
+        -Type "Excel" `
+        -Category "Employee"
+}
+
+# ============================================================
+# 14. CREATE WORD DECOY
+# ============================================================
+
+function Create-WordDecoy {
+
+    param(
+        [string]$Name,
+        [string]$Location
+    )
+
+    if (-not (Test-Path $Location)) {
+        return
+    }
+
+    $FilePath = Join-Path $Location $Name
+
+    Write-Host ""
+    Write-Host "Processing: $Name" -ForegroundColor Yellow
+
+    try {
+
+        $word = New-Object -ComObject Word.Application
+
+        $word.Visible = $false
+        $word.DisplayAlerts = 0
+
+        $document = $word.Documents.Add()
+
+        $selection = $word.Selection
+
+        $selection.TypeText("CUSTOMER DATABASE - INTERNAL")
+        $selection.TypeParagraph()
+
+        $selection.TypeText("Customer ID: CUST-1001")
+        $selection.TypeParagraph()
+
+        $selection.TypeText("Category: Enterprise")
+        $selection.TypeParagraph()
+
+        $selection.TypeText("Status: Active")
+        $selection.TypeParagraph()
+
+        $selection.TypeParagraph()
+
+        $selection.TypeText(
+            "HONEYPOT DECOY - ALL INFORMATION IS FICTIONAL"
+        )
+
+        $document.SaveAs2(
+            $FilePath,
+            16
+        )
+
+        $document.Close()
+        $word.Quit()
+
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($selection) | Out-Null
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($document) | Out-Null
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($word) | Out-Null
+
+        Write-Host "[+] Created Word file" -ForegroundColor Green
+    }
+    catch {
+
+        Write-Host "[=] Microsoft Word not available - skipping Word." -ForegroundColor Yellow
+        return
+    }
+
+    if (Set-HoneypotAudit -FilePath $FilePath) {
+
+        Write-Host "[+] Auditing enabled" -ForegroundColor Green
+    }
+
+    Register-Decoy `
+        -Name $Name `
+        -Path (Resolve-Path $FilePath).Path `
+        -Type "Word" `
+        -Category "Customer"
+}
+
+# ============================================================
+# 15. CREATE PNG DECOY
+# ============================================================
+
+function Create-PNGDecoy {
+
+    param(
+        [string]$Name,
+        [string]$Location
+    )
+
+    if (-not (Test-Path $Location)) {
+        return
+    }
+
+    $FilePath = Join-Path $Location $Name
+
+    Write-Host ""
+    Write-Host "Processing: $Name" -ForegroundColor Yellow
+
+    try {
+
+        Add-Type -AssemblyName System.Drawing
+
+        $bitmap = New-Object System.Drawing.Bitmap(800,500)
+
+        $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+
+        $graphics.Clear(
+            [System.Drawing.Color]::White
+        )
+
+        $font = New-Object System.Drawing.Font(
+            "Arial",
+            24
+        )
+
+        $brush = [System.Drawing.Brushes]::Black
+
+        $graphics.DrawString(
+            "NETWORK DIAGRAM",
+            $font,
+            $brush,
+            250,
+            50
+        )
+
+        $graphics.DrawString(
+            "Internet",
+            $font,
+            $brush,
+            330,
+            120
+        )
+
+        $graphics.DrawString(
+            "Firewall",
+            $font,
+            $brush,
+            320,
+            220
+        )
+
+        $graphics.DrawString(
+            "Application Server",
+            $font,
+            $brush,
+            250,
+            320
+        )
+
+        $graphics.DrawString(
+            "Database Server",
+            $font,
+            $brush,
+            270,
+            420
+        )
+
+        $bitmap.Save(
+            $FilePath,
+            [System.Drawing.Imaging.ImageFormat]::Png
+        )
+
+        $font.Dispose()
+        $graphics.Dispose()
+        $bitmap.Dispose()
+
+        Write-Host "[+] Created PNG" -ForegroundColor Green
+    }
+    catch {
+
+        Write-Host "[-] PNG creation failed: $($_.Exception.Message)" -ForegroundColor Red
+        return
+    }
+
+    if (Set-HoneypotAudit -FilePath $FilePath) {
+
+        Write-Host "[+] Auditing enabled" -ForegroundColor Green
+    }
+
+    Register-Decoy `
+        -Name $Name `
+        -Path (Resolve-Path $FilePath).Path `
+        -Type "PNG" `
+        -Category "Network"
+}
+
+# ============================================================
+# 16. CREATE TEXT DECOYS
+# ============================================================
+
+Create-TextDecoy `
+    -Name "VPN_Credentials.txt" `
+    -Location $DesktopPath `
+    -Content @"
+CONFIDENTIAL - VPN ACCESS
 
 VPN Profile: Corporate-Test-VPN
 Server: vpn.example.invalid
-Protocol: Test Environment
 
 Username: vpn-demo-user
 Status: Active
 
-NOTICE:
-This is a honeypot decoy.
-No real credentials are stored in this file.
-"@
-    },
+HONEYPOT DECOY
+All credentials are fictional.
+"@ `
+    -Category "Credentials"
 
-    @{
-        Name = "Project_Notes_2026.txt"
-        Location = $DesktopPath
 
-        Content = @"
-CONFIDENTIAL - PROJECT NOTES
+Create-TextDecoy `
+    -Name "Passwords.txt" `
+    -Location $DesktopPath `
+    -Content @"
+CONFIDENTIAL PASSWORD INFORMATION
 
-Project: Example Project
-Year: 2026
+Account: finance-demo
+Account: reporting-demo
+Account: admin-demo
 
-Project status:
+HONEYPOT DECOY
+All information is fictional.
+"@ `
+    -Category "Credentials"
 
-- Internal planning
-- Development notes
-- Testing
-- Future tasks
 
-Next review: Q4 2026
-
-This is a honeypot decoy.
-All information contained in this file is fake.
-"@
-    },
-
-    @{
-        Name = "Confidential_Notes.txt"
-        Location = $DesktopPath
-
-        Content = @"
-CONFIDENTIAL INTERNAL NOTES
-
-Document Classification: Internal
-
-Upcoming activities:
-
-- Project review
-- Security assessment
-- Infrastructure maintenance
-- Internal audit
-
-This is a honeypot decoy.
-All information contained in this file is fake.
-"@
-    },
-
-    # ========================================
-    # DOCUMENTS
-    # ========================================
-
-    @{
-        Name = "Employee_Database.txt"
-        Location = $DocumentsPath
-
-        Content = @"
-CONFIDENTIAL - EMPLOYEE DATABASE
-
-Employee Records - 2026
-
-Employee ID: EMP-1001
-Department: Finance
-Position: Analyst
-
-Employee ID: EMP-1002
-Department: Engineering
-Position: Developer
-
-Employee ID: EMP-1003
-Department: Operations
-Position: Manager
-
-NOTICE:
-This is a honeypot decoy.
-All employee information is fictional.
-"@
-    },
-
-    @{
-        Name = "Salary_Report.txt"
-        Location = $DocumentsPath
-
-        Content = @"
-CONFIDENTIAL - SALARY REPORT
-
-Reporting Period: 2026
+Create-TextDecoy `
+    -Name "Salary_Report.txt" `
+    -Location $DocumentsPath `
+    -Content @"
+CONFIDENTIAL SALARY REPORT
 
 Department: Engineering
-Estimated Payroll: 480000
+Payroll: 480000
 
 Department: Finance
-Estimated Payroll: 270000
+Payroll: 270000
 
-Department: Operations
-Estimated Payroll: 320000
+HONEYPOT DECOY
+All information is fictional.
+"@ `
+    -Category "Financial"
 
-NOTICE:
-This is a honeypot decoy.
-All financial information is fictional.
-"@
-    },
 
-    @{
-        Name = "HR_Records.txt"
-        Location = $DocumentsPath
-
-        Content = @"
-CONFIDENTIAL - HR RECORDS
-
-Human Resources Department
-
-Active Employees: 127
-New Employees: 18
-Employees Under Review: 4
-
-Next HR review:
-December 2026
-
-This is a honeypot decoy.
-All information contained in this file is fake.
-"@
-    },
-
-    @{
-        Name = "Financial_Report_2026.txt"
-        Location = $DocumentsPath
-
-        Content = @"
-CONFIDENTIAL - FINANCIAL REPORT
-
-Financial Year: 2026
-
-Revenue: 850000
-Expenses: 420000
-Projected Growth: 12%
-
-Operating Budget: 500000
-Reserve Budget: 125000
-
-NOTICE:
-This is a honeypot decoy.
-All financial information is fictional.
-"@
-    },
-
-    @{
-        Name = "Customer_List.txt"
-        Location = $DocumentsPath
-
-        Content = @"
-CONFIDENTIAL - CUSTOMER LIST
+Create-TextDecoy `
+    -Name "Customer_List.txt" `
+    -Location $DocumentsPath `
+    -Content @"
+CONFIDENTIAL CUSTOMER LIST
 
 Customer ID: CUST-1001
 Category: Enterprise
@@ -335,414 +738,65 @@ Customer ID: CUST-1002
 Category: Business
 Status: Active
 
-Customer ID: CUST-1003
-Category: Standard
-Status: Pending
+HONEYPOT DECOY
+All information is fictional.
+"@ `
+    -Category "Customer"
 
-NOTICE:
-This is a honeypot decoy.
-All customer information is fictional.
-"@
-    },
 
-    # ========================================
-    # DOWNLOADS
-    # ========================================
-
-    @{
-        Name = "Database_Backup.txt"
-        Location = $DownloadsPath
-
-        Content = @"
-DATABASE BACKUP INFORMATION
-
-Backup Date: 2026-08-01
-Database: ExampleDB
-Backup Type: Full
-Status: Completed
-
-Backup Size: 4.7 GB
-
-NOTICE:
-This is a honeypot decoy.
-No real database information is contained here.
-"@
-    },
-
-    @{
-        Name = "Credentials.txt"
-        Location = $DownloadsPath
-
-        Content = @"
-CONFIDENTIAL - SYSTEM CREDENTIAL INFORMATION
-
-System: Development-Test
-
-Username: demo-user
-Environment: Testing
-Status: Active
-
-System: Reporting-Test
-
-Username: report-user
-Environment: Testing
-Status: Active
-
-NOTICE:
-This is a honeypot decoy.
-No real credentials are stored here.
-"@
-    },
-
-    @{
-        Name = "Network_Config.txt"
-        Location = $DownloadsPath
-
-        Content = @"
+Create-TextDecoy `
+    -Name "Network_Config.txt" `
+    -Location $DownloadsPath `
+    -Content @"
 INTERNAL NETWORK CONFIGURATION
-
-Environment: Development
 
 Network: 10.10.0.0/24
 Gateway: 10.10.0.1
 
-Test Server:
-10.10.0.20
-
 Database Server:
 10.10.0.30
 
-NOTICE:
-This is a honeypot decoy.
-All network information is fictional.
-"@
-    },
+HONEYPOT DECOY
+All information is fictional.
+"@ `
+    -Category "Network"
 
-    @{
-        Name = "Backup_Information.txt"
-        Location = $DownloadsPath
+# ============================================================
+# 17. CREATE MULTI-FORMAT DECOYS
+# ============================================================
 
-        Content = @"
-CONFIDENTIAL BACKUP INFORMATION
+Create-JSDecoy `
+    -Name "database_config.js" `
+    -Location $DownloadsPath
 
-Backup System: Example Backup Server
 
-Last Backup:
-2026-08-05
+Create-PDFDecoy `
+    -Name "Financial_Report_2026.pdf" `
+    -Location $DocumentsPath
 
-Backup Status:
-SUCCESS
 
-Retention:
-30 Days
+Create-ExcelDecoy `
+    -Name "Employee_Salaries.xlsx" `
+    -Location $DocumentsPath
 
-NOTICE:
-This is a honeypot decoy.
-All information contained in this file is fictional.
-"@
-    },
 
-    # ========================================
-    # PICTURES
-    # ========================================
+Create-WordDecoy `
+    -Name "Customer_Database.docx" `
+    -Location $DocumentsPath
 
-    @{
-        Name = "Network_Diagram.txt"
-        Location = $PicturesPath
 
-        Content = @"
-NETWORK DIAGRAM NOTES
+Create-PNGDecoy `
+    -Name "Network_Diagram.png" `
+    -Location $PicturesPath
 
-Corporate Network
-
-Internet
-   |
-Firewall
-   |
-Core Router
-   |
-Switch
-   |
-Application Servers
-   |
-Database Servers
-
-NOTICE:
-This is a honeypot decoy.
-This is a text representation of a fictional network.
-"@
-    },
-
-    @{
-        Name = "Server_Architecture.txt"
-        Location = $PicturesPath
-
-        Content = @"
-SERVER ARCHITECTURE NOTES
-
-Application Layer
-        |
-Web Server
-        |
-Application Server
-        |
-Database Server
-        |
-Backup Server
-
-Environment:
-Internal Test Infrastructure
-
-NOTICE:
-This is a honeypot decoy.
-All architecture information is fictional.
-"@
-    },
-
-    # ========================================
-    # ONEDRIVE
-    # ========================================
-
-    @{
-        Name = "Company_Strategy.txt"
-        Location = $OneDrivePath
-
-        Content = @"
-CONFIDENTIAL - COMPANY STRATEGY
-
-Strategic Planning - 2026
-
-Primary Objectives:
-
-1. Improve infrastructure
-2. Expand internal services
-3. Improve security
-4. Reduce operational costs
-
-Review Period:
-Q4 2026
-
-NOTICE:
-This is a honeypot decoy.
-All information contained in this file is fictional.
-"@
-    },
-
-    @{
-        Name = "Board_Meeting_Notes.txt"
-        Location = $OneDrivePath
-
-        Content = @"
-CONFIDENTIAL - BOARD MEETING NOTES
-
-Meeting Date:
-October 2026
-
-Discussion Topics:
-
-- Infrastructure investment
-- Security improvements
-- Budget planning
-- Project development
-
-Next Meeting:
-December 2026
-
-NOTICE:
-This is a honeypot decoy.
-All information contained in this file is fictional.
-"@
-    },
-
-    @{
-        Name = "Budget_2026.txt"
-        Location = $OneDrivePath
-
-        Content = @"
-CONFIDENTIAL - COMPANY BUDGET
-
-Budget Year: 2026
-
-Infrastructure: 180000
-Operations: 240000
-Security: 95000
-Research: 125000
-
-Total Planned Budget: 640000
-
-NOTICE:
-This is a honeypot decoy.
-All financial information is fictional.
-"@
-    }
-)
-
-# --------------------------------------------
-# 8. Remove decoys with unavailable locations
-# --------------------------------------------
-
-$AvailableDecoys = @()
-
-foreach ($Decoy in $Decoys) {
-
-    if ($Decoy.Location -and (Test-Path $Decoy.Location)) {
-
-        $AvailableDecoys += $Decoy
-    }
-    elseif ($Decoy.Location) {
-
-        Write-Host "[=] Skipping unavailable location:"
-        Write-Host "    $($Decoy.Location)"
-        Write-Host ""
-    }
-}
-
-# --------------------------------------------
-# 9. Function to configure auditing
-# --------------------------------------------
-
-function Set-HoneypotAudit {
-
-    param (
-        [string]$FilePath
-    )
-
-    try {
-
-        # Get existing ACL including audit information
-        $acl = Get-Acl -Path $FilePath -Audit
-
-        # Everyone SID
-        $identity = New-Object System.Security.Principal.SecurityIdentifier(
-            "S-1-1-0"
-        )
-
-        # Read + Write
-        $rights =
-            [System.Security.AccessControl.FileSystemRights]::ReadData `
-            -bor `
-            [System.Security.AccessControl.FileSystemRights]::WriteData
-
-        # Successful access
-        $auditFlags =
-            [System.Security.AccessControl.AuditFlags]::Success
-
-        # Create audit rule
-        $auditRule =
-            New-Object System.Security.AccessControl.FileSystemAuditRule(
-                $identity,
-                $rights,
-                $auditFlags
-            )
-
-        # Add audit rule
-        $acl.AddAuditRule($auditRule)
-
-        # Apply ACL
-        Set-Acl -Path $FilePath -AclObject $acl
-
-        return $true
-    }
-
-    catch {
-
-        Write-Host ""
-        Write-Host "Audit configuration error:" -ForegroundColor Red
-        Write-Host $_.Exception.Message -ForegroundColor Red
-        Write-Host ""
-
-        return $false
-    }
-}
-
-# --------------------------------------------
-# 10. Registry
-# --------------------------------------------
-
-$Registry = @()
-
-# --------------------------------------------
-# 11. Create and configure decoys
-# --------------------------------------------
-
-foreach ($Decoy in $AvailableDecoys) {
-
-    $FilePath = Join-Path $Decoy.Location $Decoy.Name
-
-    Write-Host "--------------------------------------------"
-    Write-Host "Processing: $($Decoy.Name)"
-    Write-Host "Location: $($Decoy.Location)"
-    Write-Host "--------------------------------------------"
-
-    # ----------------------------------------
-    # Create decoy
-    # ----------------------------------------
-
-    if (-not (Test-Path $FilePath)) {
-
-        Set-Content `
-            -Path $FilePath `
-            -Value $Decoy.Content `
-            -Encoding UTF8
-
-        Write-Host "[+] Created file" -ForegroundColor Green
-    }
-
-    else {
-
-        Write-Host "[=] File already exists"
-    }
-
-    # ----------------------------------------
-    # Configure auditing
-    # ----------------------------------------
-
-    Write-Host "[+] Configuring file auditing..."
-
-    $AuditResult = Set-HoneypotAudit -FilePath $FilePath
-
-    if ($AuditResult) {
-
-        Write-Host "[+] Auditing configured successfully" -ForegroundColor Green
-    }
-
-    else {
-
-        Write-Host "[-] Auditing configuration failed" -ForegroundColor Red
-    }
-
-    # ----------------------------------------
-    # Resolve exact path
-    # ----------------------------------------
-
-    $ResolvedPath = (Resolve-Path $FilePath).Path
-
-    # ----------------------------------------
-    # Add to registry
-    # ----------------------------------------
-
-    $Registry += [PSCustomObject]@{
-
-        Name = $Decoy.Name
-
-        Path = $ResolvedPath
-
-        Type = "Honeypot Decoy"
-
-    }
-
-    Write-Host ""
-}
-
-# --------------------------------------------
-# 12. Save registry
-# --------------------------------------------
+# ============================================================
+# 18. SAVE REGISTRY
+# ============================================================
 
 $RegistryFile = Join-Path $BaseDir "decoy_registry.json"
 
 $json = $Registry | ConvertTo-Json -Depth 5
 
-# Write UTF-8 WITHOUT BOM
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 [System.IO.File]::WriteAllText(
@@ -751,83 +805,54 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     $Utf8NoBom
 )
 
-Write-Host "============================================"
-Write-Host "       DECOY REGISTRY CREATED"
-Write-Host "============================================"
-Write-Host ""
-
-Write-Host "[+] Registry:"
-Write-Host "    $RegistryFile"
+# ============================================================
+# 19. SUMMARY
+# ============================================================
 
 Write-Host ""
+Write-Host "==================================================" -ForegroundColor Cyan
+Write-Host "             DECOY SETUP COMPLETE" -ForegroundColor Cyan
+Write-Host "==================================================" -ForegroundColor Cyan
+Write-Host ""
 
-# --------------------------------------------
-# 13. Display registered decoys
-# --------------------------------------------
+Write-Host "Total registered decoys: $($Registry.Count)" -ForegroundColor Green
 
-Write-Host "============================================"
-Write-Host "       REGISTERED DECOYS"
-Write-Host "============================================"
 Write-Host ""
 
 foreach ($Entry in $Registry) {
 
-    Write-Host "[+] $($Entry.Name)"
+    Write-Host "[$($Entry.Type)] $($Entry.Name)"
     Write-Host "    $($Entry.Path)"
-    Write-Host ""
-}
-
-# --------------------------------------------
-# 14. Registry count
-# --------------------------------------------
-
-Write-Host "============================================"
-Write-Host "       DECOY SUMMARY"
-Write-Host "============================================"
-Write-Host ""
-
-Write-Host "[+] Total registered decoys: $($Registry.Count)" -ForegroundColor Green
-
-Write-Host ""
-
-# --------------------------------------------
-# 15. Verify audit policy
-# --------------------------------------------
-
-Write-Host "============================================"
-Write-Host "       AUDIT POLICY CHECK"
-Write-Host "============================================"
-Write-Host ""
-
-auditpol /get /subcategory:"File System"
-
-Write-Host ""
-
-# --------------------------------------------
-# 16. Finish
-# --------------------------------------------
-
-Write-Host "============================================"
-Write-Host "       HONEYPOT SETUP COMPLETE"
-Write-Host "============================================"
-Write-Host ""
-
-Write-Host "Created/registered decoys:"
-Write-Host ""
-
-foreach ($Entry in $Registry) {
-
-    Write-Host " - $($Entry.Path)"
 }
 
 Write-Host ""
 
 Write-Host "Registry:"
-Write-Host " $RegistryFile"
+Write-Host "    $RegistryFile"
 
 Write-Host ""
 
-Write-Host "Next step:"
-Write-Host "Run monitor.py and test ONE decoy at a time."
+# ============================================================
+# 20. AUDIT POLICY VERIFICATION
+# ============================================================
 
+Write-Host "==================================================" -ForegroundColor Cyan
+Write-Host "             AUDIT POLICY CHECK" -ForegroundColor Cyan
+Write-Host "==================================================" -ForegroundColor Cyan
+
+auditpol /get /subcategory:"File System"
+
+Write-Host ""
+
+Write-Host "==================================================" -ForegroundColor Green
+Write-Host "        HONEYPOT SETUP FINISHED" -ForegroundColor Green
+Write-Host "==================================================" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "Next:"
+Write-Host "1. Start monitor.py"
+Write-Host "2. Access ONE decoy"
+Write-Host "3. Check Event ID 4663"
+Write-Host "4. Check the API"
+Write-Host "5. Check the dashboard"
 Write-Host ""
